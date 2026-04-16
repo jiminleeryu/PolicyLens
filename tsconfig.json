@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM"],
+    "moduleResolution": "Bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "types": ["chrome", "vite/client"],
+    "baseUrl": "."
+  },
+  "include": ["src", "manifest.json", "vite.config.ts", "tailwind.config.cjs", "postcss.config.cjs"]
+}
