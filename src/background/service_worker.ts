@@ -4,7 +4,7 @@ import type { AnalysisResult, AnalyzePolicyMessage } from "../types";
 const OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string | undefined;
-const CACHE_SCHEMA_VERSION = "v3";
+const CACHE_SCHEMA_VERSION = "v4";
 const DEBUG_LOGS_ENABLED = import.meta.env.VITE_DEBUG_POLICYLENS === "true";
 const MAX_OPENAI_RETRIES = 2;
 const BASE_RETRY_DELAY_MS = 1500;

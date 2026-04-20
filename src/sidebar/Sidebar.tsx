@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ analysis, loading, onClose }) 
                   <SectionCard key={`${section.title}-${section.short_summary}`} {...section} />
                 ))}
               </section>
-              <ScoreBreakdown breakdown={scored.breakdown} />
+              <ScoreBreakdown breakdown={scored.breakdown} calculation={scored.calculation} />
             </>
           )}
         </div>
