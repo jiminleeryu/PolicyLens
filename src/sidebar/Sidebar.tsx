@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { DisclaimerBanner } from "./DisclaimerBanner";
 import { ScoreGauge } from "./ScoreGauge";
 import { SectionCard } from "./SectionCard";
 import { ScoreBreakdown } from "./ScoreBreakdown";
+import { WeightCustomizer } from "./WeightCustomizer";
 import { calculateScore } from "../utils/scoreCalculator";
-import type { AnalysisResult } from "../types";
+import { loadWeights, DEFAULT_WEIGHTS } from "../utils/userWeights";
+import type { AnalysisResult, UserWeights } from "../types";
 
 interface SidebarProps {
   analysis: AnalysisResult | null;
@@ -40,7 +42,13 @@ const OutOfScopeState: React.FC = () => {
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ analysis, loading, onClose }) => {
-  const scored = analysis && !analysis.out_of_scope ? calculateScore(analysis) : null;
+  const [weights, setWeights] = useState<UserWeights>({ ...DEFAULT_WEIGHTS });
+
+  useEffect(() => {
+    void loadWeights().then(setWeights);
+  }, []);
+
+  const scored = analysis && !analysis.out_of_scope ? calculateScore(analysis, weights) : null;
 
   return (
     <aside className="h-screen w-[420px] border-l border-slate-200 bg-slate-50 text-slate-900 shadow-2xl">
@@ -69,6 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ analysis, loading, onClose }) 
           {!loading && analysis && !analysis.out_of_scope && scored && (
             <>
               <ScoreGauge score={scored.score} grade={scored.grade} />
+              <WeightCustomizer weights={weights} onChange={setWeights} />
               <section className="space-y-2">
                 {analysis.sections.map((section) => (
                   <SectionCard key={`${section.title}-${section.short_summary}`} {...section} />

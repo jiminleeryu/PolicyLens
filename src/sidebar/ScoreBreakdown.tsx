@@ -45,6 +45,11 @@ export const ScoreBreakdown: React.FC<ScoreBreakdownProps> = ({ breakdown, calcu
                   }`}
                 >
                   {formatImpact(item.impact)}
+                  {item.weightMultiplier !== undefined && (
+                    <span className="ml-1 rounded bg-indigo-100 px-1 text-xs font-medium text-indigo-700">
+                      ×{item.weightMultiplier}
+                    </span>
+                  )}
                 </td>
                 <td className="py-2 text-slate-700">{item.reason}</td>
               </tr>

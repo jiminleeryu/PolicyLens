@@ -1,4 +1,12 @@
-import type { AnalysisResult, ScoredResult, ScoreBreakdownItem } from "../types";
+import type { AnalysisResult, ScoredResult, ScoreBreakdownItem, UserWeights } from "../types";
+
+// Weight multipliers are defined here so userWeights.ts can import SENSITIVE_PENALTIES
+// without creating a circular dependency.
+const WEIGHT_MULTIPLIERS: Record<string, number> = {
+  normal: 1,
+  important: 1.5,
+  critical: 2
+};
 
 export const SENSITIVE_PENALTIES: Record<string, number> = {
   "sells user data": 25,
@@ -93,7 +101,10 @@ export interface ScoreCalculation {
   effectiveAdditions: number;
 }
 
-export const calculateScore = (analysis: AnalysisResult): ScoredResult & { calculation: ScoreCalculation } => {
+export const calculateScore = (
+  analysis: AnalysisResult,
+  weights?: UserWeights
+): ScoredResult & { calculation: ScoreCalculation } => {
   const breakdown: ScoreBreakdownItem[] = [];
   const seenPenaltyKeys = new Set<string>();
   const seenBonusKeys = new Set<string>();
@@ -103,15 +114,19 @@ export const calculateScore = (analysis: AnalysisResult): ScoredResult & { calcu
   for (const flag of analysis.sensitive_flags) {
     const entry = findPenaltyEntry(flag);
     if (!entry) continue;
-    const [key, impact] = entry;
+    const [key, basePenalty] = entry;
     // Deduplicate: don't apply the same canonical penalty twice
     if (seenPenaltyKeys.has(key)) continue;
     seenPenaltyKeys.add(key);
+    const level = weights?.[key] ?? "normal";
+    const multiplier = WEIGHT_MULTIPLIERS[level] ?? 1;
+    const impact = Math.round(basePenalty * multiplier);
     deductions += impact;
     breakdown.push({
       label: flag,
       impact: -impact,
-      reason: SENSITIVE_REASONS[key] ?? "Sensitive data practice detected."
+      reason: SENSITIVE_REASONS[key] ?? "Sensitive data practice detected.",
+      weightMultiplier: multiplier !== 1 ? multiplier : undefined
     });
   }
 
